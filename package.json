@@ -2,6 +2,7 @@
   "name": "smartXML",
   "version": "0.0.1",
   "dependencies": {
-    
+    "bunyan": "^1.8.12",
+    "jsdom": "^11.6.2"
   }
 }
