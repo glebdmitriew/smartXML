@@ -1,13 +1,17 @@
 const fs = require('fs');
-const { JSDOM } = require('jsdom');
+const {JSDOM} = require('jsdom');
 
-const targetElementId = "make-everything-ok-button";
 
 try {
-  const [originPath, diffPath] = process.argv.slice(2);
+  const [
+    originPath,
+    diffPath,
+    targetElementId = 'make-everything-ok-button'
+  ] = process.argv.slice(2);
 
-  console.log("originPath",  originPath);
-  console.log("diffPath",  diffPath);
+  console.log(`originPath: ${originPath}`);
+  console.log(`diffPath: ${diffPath}`);
+  console.log(`targetElementId: ${targetElementId}`);
 
   const sampleFile = fs.readFileSync(originPath);
   const dom = new JSDOM(sampleFile);
