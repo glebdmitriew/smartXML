@@ -1,10 +1,44 @@
 const stringSimilarity = require('string-similarity');
 
-exports.getElementsSimilarity = function (origElem, diffElem) {
-  const origAttributes = Array.prototype.slice.apply(origElem.attributes);
-  const diffAttributes = Array.prototype.slice.apply(diffElem.attributes);
+function getElementStringifiedData (element) {
+  let origAttributes = Array.prototype.slice.apply(element.attributes);
+  origAttributes.textContent = element.textContent;
+  return JSON.stringify(origAttributes);
+}
 
-  let similarity = stringSimilarity.compareTwoStrings(JSON.stringify(origAttributes), JSON.stringify(diffAttributes));
+function getElementsSimilarity (origElem, diffElem) {
+  if (diffElem.attributes.id
+    && diffElem.attributes.id.value === origElem.attributes.id.value) {
+    // ids match -> perfect match
+    return 1;
+  }
 
-  return similarity;
+  let origData = getElementStringifiedData(origElem);
+  let diffData = getElementStringifiedData(diffElem);
+
+  return stringSimilarity.compareTwoStrings(origData, diffData);
+}
+
+exports.getMostSimilarElementToTarget = function (targetElement, elements) {
+  let mostSimilarElement = {
+    element: null,
+    similarity: 0
+  };
+
+  for (let i = 0; i < elements.length; i++) {
+    if (elements[i] && elements[i].attributes) {
+      let diffElement = elements[i];
+      let similarity = getElementsSimilarity(targetElement, diffElement);
+
+      if (similarity > mostSimilarElement.similarity) {
+        mostSimilarElement.element = diffElement;
+        mostSimilarElement.similarity = similarity;
+      }
+    }
+  }
+
+  return mostSimilarElement;
 };
+
+
+
