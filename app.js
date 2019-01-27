@@ -13,27 +13,41 @@ try {
   const sampleFile = fs.readFileSync(originPath);
   const dom = new JSDOM(sampleFile);
 
-  const button = dom.window.document.getElementById(targetElementId);
-  console.log(`Successfully found element. Element Text: ${button.textContent}`);
+  const targetElement = dom.window.document.getElementById(targetElementId);
 
+  console.log(targetElement.tagName);
 
   const diffFile = fs.readFileSync(diffPath);
   const diffDom = new JSDOM(diffFile);
 
-  let buttons = [];
-  buttons = buttons.concat(Array.prototype.slice.apply(diffDom.window.document.getElementsByTagName('a')));
-  buttons = buttons.concat(Array.prototype.slice.apply(diffDom.window.document.getElementsByTagName('button')));
+  let elements = Array.prototype.slice.apply(diffDom.window.document.getElementsByTagName(targetElement.tagName));
 
-  for (let i = 0; i < buttons.length; i++) {
-    if (buttons[i] && buttons[i].attributes) {
-      const arr = Array.prototype.slice.apply(buttons[i].attributes);
+  let mostSimilarElement = {
+    element: null,
+    similarity: 0
+  };
+
+  for (let i = 0; i < elements.length; i++) {
+    if (elements[i] && elements[i].attributes) {
+      let diffElement = elements[i];
+      const arr = Array.prototype.slice.apply(diffElement.attributes);
       console.log(arr.map(attr => `${attr.name} = ${attr.value}`).join(', '));
-      let similarity = getElementsSimilarity(button, buttons[i]);
+      let similarity = getElementsSimilarity(targetElement, diffElement);
       console.log(similarity);
+
+      if (similarity > mostSimilarElement.similarity) {
+        mostSimilarElement.element = diffElement;
+        mostSimilarElement.similarity = similarity;
+      }
     }
   }
 
-  const array = Array.prototype.slice.apply(button.attributes);
+
+  const arrSim = Array.prototype.slice.apply(mostSimilarElement.element.attributes);
+  console.log(`Most similar element: ${arrSim.map(attr => `${attr.name} = ${attr.value}`).join(', ')}`);
+  console.log(`Most similar element: ${mostSimilarElement.similarity}`);
+
+  const array = Array.prototype.slice.apply(targetElement.attributes);
   console.log(array.map(attr => `${attr.name} = ${attr.value}`).join(', '));
 } catch (err) {
   console.error('Error trying to find element by id', err);
