@@ -4,7 +4,11 @@ exports.getElementPath = function (element) {
 
   while (element) {
     path.unshift(element);
-    pathString = `${element.tagName} > ` + pathString;
+    if (pathString === '') {
+      pathString = element.tagName
+    } else {
+      pathString = `${element.tagName} > ` + pathString;
+    }
     if (element.tagName === 'HTML') {
       break;
     } else {
