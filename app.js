@@ -1,6 +1,7 @@
 const fs = require('fs');
 const jsdom = require('jsdom');
 const {getMostSimilarElementToTarget} = require('./src/getElementsSimilarity.js');
+const {getElementPath} = require('./src/domPath.js');
 
 try {
   const [
@@ -25,6 +26,7 @@ try {
 
   const arrSim = Array.prototype.slice.apply(mostSimilarElement.element.attributes);
   console.log(`Most similar element (similarity=${mostSimilarElement.similarity}):\n ${arrSim.map(attr => `${attr.name} = ${attr.value}`).join(', ')}`);
+  console.log(`Path: ${getElementPath(mostSimilarElement.element)}`);
 } catch (err) {
   console.error('Error trying to find element by id', err);
 }
